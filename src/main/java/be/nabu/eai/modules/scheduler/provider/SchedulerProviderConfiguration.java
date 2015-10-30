@@ -14,7 +14,7 @@ public class SchedulerProviderConfiguration {
 	private Integer poolSize;
 	private boolean enabled;
 
-	@InterfaceFilter(implement = "be.nabu.eai.artifacts.scheduler.provider.api.SchedulerProvider.run")
+	@InterfaceFilter(implement = "be.nabu.eai.modules.scheduler.provider.api.SchedulerProvider.run")
 	@XmlJavaTypeAdapter(value = ArtifactXMLAdapter.class)
 	public DefinedService getRunService() {
 		return runService;
