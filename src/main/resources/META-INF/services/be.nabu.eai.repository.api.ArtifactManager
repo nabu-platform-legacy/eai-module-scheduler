@@ -1,3 +1,3 @@
-be.nabu.eai.modules.scheduler.provider.SchedulerProviderManager
-be.nabu.eai.modules.scheduler.simple.SimpleSchedulerArtifactManager
-be.nabu.eai.modules.scheduler.complex.ComplexSchedulerArtifactManager
+be.nabu.eai.module.scheduler.provider.SchedulerProviderManager
+be.nabu.eai.module.scheduler.simple.SimpleSchedulerArtifactManager
+be.nabu.eai.module.scheduler.complex.ComplexSchedulerArtifactManager

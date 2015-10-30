@@ -1,4 +1,4 @@
-package be.nabu.eai.modules.scheduler.provider;
+package be.nabu.eai.module.scheduler.provider;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;

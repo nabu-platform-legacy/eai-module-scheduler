@@ -1,10 +1,10 @@
-package be.nabu.eai.modules.scheduler.provider;
+package be.nabu.eai.module.scheduler.provider;
 
 import java.util.Comparator;
 import java.util.Date;
 
-import be.nabu.eai.modules.scheduler.base.BaseSchedulerArtifact;
-import be.nabu.eai.modules.scheduler.base.BaseSchedulerConfiguration;
+import be.nabu.eai.module.scheduler.base.BaseSchedulerArtifact;
+import be.nabu.eai.module.scheduler.base.BaseSchedulerConfiguration;
 
 public class SchedulerComparator<T extends BaseSchedulerConfiguration> implements Comparator<BaseSchedulerArtifact<T>> {
 

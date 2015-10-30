@@ -1,4 +1,4 @@
-package be.nabu.eai.modules.scheduler.provider;
+package be.nabu.eai.module.scheduler.provider;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,8 +12,8 @@ import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import be.nabu.eai.modules.scheduler.base.BaseSchedulerArtifact;
-import be.nabu.eai.modules.scheduler.base.BaseSchedulerConfiguration;
+import be.nabu.eai.module.scheduler.base.BaseSchedulerArtifact;
+import be.nabu.eai.module.scheduler.base.BaseSchedulerConfiguration;
 import be.nabu.eai.repository.EAIResourceRepository;
 
 public class Scheduler implements Runnable {

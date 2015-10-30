@@ -1,4 +1,4 @@
-package be.nabu.eai.modules.scheduler.base;
+package be.nabu.eai.module.scheduler.base;
 
 import java.util.LinkedHashMap;
 import java.util.List;

@@ -1,4 +1,4 @@
-package be.nabu.eai.modules.scheduler.simple;
+package be.nabu.eai.module.scheduler.simple;
 
 import java.io.IOException;
 import java.util.Date;
@@ -6,7 +6,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import be.nabu.eai.modules.scheduler.base.BaseSchedulerArtifact;
+import be.nabu.eai.module.scheduler.base.BaseSchedulerArtifact;
 import be.nabu.libs.resources.api.ResourceContainer;
 
 public class SimpleSchedulerArtifact extends BaseSchedulerArtifact<SimpleSchedulerConfiguration> {

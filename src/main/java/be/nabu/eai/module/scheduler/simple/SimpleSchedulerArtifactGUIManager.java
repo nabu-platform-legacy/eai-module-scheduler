@@ -1,10 +1,10 @@
-package be.nabu.eai.modules.scheduler.simple;
+package be.nabu.eai.module.scheduler.simple;
 
 import java.io.IOException;
 import java.util.List;
 
 import be.nabu.eai.developer.MainController;
-import be.nabu.eai.modules.scheduler.base.BaseSchedulerGUIManager;
+import be.nabu.eai.module.scheduler.base.BaseSchedulerGUIManager;
 import be.nabu.eai.repository.resources.RepositoryEntry;
 import be.nabu.libs.property.api.Property;
 import be.nabu.libs.property.api.Value;

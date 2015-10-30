@@ -1,9 +1,9 @@
-package be.nabu.eai.modules.scheduler.simple;
+package be.nabu.eai.module.scheduler.simple;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import be.nabu.eai.modules.scheduler.base.BaseSchedulerConfiguration;
+import be.nabu.eai.module.scheduler.base.BaseSchedulerConfiguration;
 
 @XmlRootElement(name = "simpleScheduler")
 @XmlType(propOrder = { "repeatInterval" })

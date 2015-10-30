@@ -1,4 +1,4 @@
-package be.nabu.eai.modules.scheduler.provider;
+package be.nabu.eai.module.scheduler.provider;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -14,7 +14,7 @@ public class SchedulerProviderConfiguration {
 	private Integer poolSize;
 	private boolean enabled;
 
-	@InterfaceFilter(implement = "be.nabu.eai.modules.scheduler.provider.api.SchedulerProvider.run")
+	@InterfaceFilter(implement = "be.nabu.eai.module.scheduler.provider.api.SchedulerProvider.run")
 	@XmlJavaTypeAdapter(value = ArtifactXMLAdapter.class)
 	public DefinedService getRunService() {
 		return runService;

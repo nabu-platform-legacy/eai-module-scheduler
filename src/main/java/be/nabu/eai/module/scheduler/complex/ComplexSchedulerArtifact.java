@@ -1,4 +1,4 @@
-package be.nabu.eai.modules.scheduler.complex;
+package be.nabu.eai.module.scheduler.complex;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -8,9 +8,9 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import be.nabu.eai.modules.scheduler.base.BaseSchedulerArtifact;
-import be.nabu.eai.modules.scheduler.complex.ComplexSchedulerConfiguration.DayOfWeek;
-import be.nabu.eai.modules.scheduler.complex.ComplexSchedulerConfiguration.MonthOfYear;
+import be.nabu.eai.module.scheduler.base.BaseSchedulerArtifact;
+import be.nabu.eai.module.scheduler.complex.ComplexSchedulerConfiguration.DayOfWeek;
+import be.nabu.eai.module.scheduler.complex.ComplexSchedulerConfiguration.MonthOfYear;
 import be.nabu.libs.resources.api.ResourceContainer;
 
 public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSchedulerConfiguration> {
