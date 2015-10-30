@@ -14,5 +14,13 @@ public class Scheduler {
 		// TODO: start a scheduler thread
 	}
 	
+	public void stop(String schedulerId) {
+		
+	}
+	
+	public void start(String schedulerId) {
+		
+	}
+	
 	// TODO: add some methods to check which scheduler is running, to activate/deactivate a scheduler etc
 }
