@@ -1,4 +1,4 @@
-package nabu;
+package nabu.services;
 
 import javax.jws.WebService;
 
