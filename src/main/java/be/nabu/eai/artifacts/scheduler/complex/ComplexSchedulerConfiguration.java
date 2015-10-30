@@ -5,12 +5,14 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import be.nabu.eai.api.Enumerator;
 import be.nabu.eai.api.ValueEnumerator;
 import be.nabu.eai.artifacts.scheduler.base.BaseSchedulerConfiguration;
 
 @XmlRootElement(name = "complexScheduler")
+@XmlType(propOrder = { "year", "monthOfYear", "dayOfMonth", "dayOfWeek", "hour", "minute", "second" })
 public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 	
 	private List<Integer> year;
@@ -137,7 +139,7 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 		public List<?> enumerate() {
 			List<Integer> values = new ArrayList<Integer>();
 			Calendar calendar = Calendar.getInstance();
-			for (int i = calendar.get(Calendar.YEAR); i <= 50; i++) {
+			for (int i = calendar.get(Calendar.YEAR); i <= calendar.get(Calendar.YEAR) + 50; i++) {
 				values.add(i);
 			}
 			return values;

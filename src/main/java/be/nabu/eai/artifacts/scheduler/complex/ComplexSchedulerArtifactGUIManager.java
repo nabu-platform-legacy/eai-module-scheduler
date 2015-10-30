@@ -3,16 +3,16 @@ package be.nabu.eai.artifacts.scheduler.complex;
 import java.io.IOException;
 import java.util.List;
 
+import be.nabu.eai.artifacts.scheduler.base.BaseSchedulerGUIManager;
 import be.nabu.eai.developer.MainController;
-import be.nabu.eai.developer.managers.base.BaseJAXBGUIManager;
 import be.nabu.eai.repository.resources.RepositoryEntry;
 import be.nabu.libs.property.api.Property;
 import be.nabu.libs.property.api.Value;
 
-public class ComplexSchedulerArtifactGUIManager extends BaseJAXBGUIManager<ComplexSchedulerConfiguration, ComplexSchedulerArtifact> {
+public class ComplexSchedulerArtifactGUIManager extends BaseSchedulerGUIManager<ComplexSchedulerConfiguration, ComplexSchedulerArtifact> {
 
 	public ComplexSchedulerArtifactGUIManager() {
-		super("Scheduler", ComplexSchedulerArtifact.class, new ComplexSchedulerArtifactManager(), ComplexSchedulerConfiguration.class);
+		super("Complex Scheduler", ComplexSchedulerArtifact.class, new ComplexSchedulerArtifactManager(), ComplexSchedulerConfiguration.class);
 	}
 
 	@Override
