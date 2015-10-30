@@ -12,7 +12,7 @@ public class ComplexSchedulerArtifactManager extends JAXBArtifactManager<Complex
 
 	@Override
 	protected ComplexSchedulerArtifact newInstance(String id, ResourceContainer<?> container, Repository repository) {
-		return new ComplexSchedulerArtifact(id, container);
+		return new ComplexSchedulerArtifact(id, container, repository);
 	}
 
 }

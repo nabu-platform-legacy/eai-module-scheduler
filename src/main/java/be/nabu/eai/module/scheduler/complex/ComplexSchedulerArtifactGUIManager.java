@@ -22,7 +22,7 @@ public class ComplexSchedulerArtifactGUIManager extends BaseSchedulerGUIManager<
 
 	@Override
 	protected ComplexSchedulerArtifact newInstance(MainController controller, RepositoryEntry entry, Value<?>... values) throws IOException {
-		return new ComplexSchedulerArtifact(entry.getId(), entry.getContainer());
+		return new ComplexSchedulerArtifact(entry.getId(), entry.getContainer(), entry.getRepository());
 	}
 
 }

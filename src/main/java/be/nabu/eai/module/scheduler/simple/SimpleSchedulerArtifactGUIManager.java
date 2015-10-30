@@ -22,7 +22,7 @@ public class SimpleSchedulerArtifactGUIManager extends BaseSchedulerGUIManager<S
 
 	@Override
 	protected SimpleSchedulerArtifact newInstance(MainController controller, RepositoryEntry entry, Value<?>... values) throws IOException {
-		return new SimpleSchedulerArtifact(entry.getId(), entry.getContainer());
+		return new SimpleSchedulerArtifact(entry.getId(), entry.getContainer(), entry.getRepository());
 	}
 
 }

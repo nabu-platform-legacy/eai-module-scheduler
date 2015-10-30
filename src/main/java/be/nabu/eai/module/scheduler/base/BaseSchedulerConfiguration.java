@@ -11,12 +11,12 @@ import be.nabu.eai.repository.jaxb.ArtifactXMLAdapter;
 import be.nabu.eai.repository.util.KeyValueMapAdapter;
 import be.nabu.libs.services.api.DefinedService;
 
-@XmlType(propOrder = { "enabled", "service", "amountOfTimes", "provider", "allowOverlap", "parameters" })
+@XmlType(propOrder = { "enabled", "service", "amountOfTimes", "provider", "allowOverlap", "properties" })
 public class BaseSchedulerConfiguration {
 	
 	private boolean enabled;
 	private DefinedService service;
-	private Map<String, String> parameters;
+	private Map<String, String> properties;
 	private Long amountOfTimes;
 	private SchedulerProviderArtifact provider;
 	private boolean allowOverlap;
@@ -37,14 +37,14 @@ public class BaseSchedulerConfiguration {
 	}
 
 	@XmlJavaTypeAdapter(value = KeyValueMapAdapter.class)
-	public Map<String, String> getParameters() {
-		if (parameters == null) {
-			parameters = new LinkedHashMap<String, String>();
+	public Map<String, String> getProperties() {
+		if (properties == null) {
+			properties = new LinkedHashMap<String, String>();
 		}
-		return parameters;
+		return properties;
 	}
-	public void setParameters(Map<String, String> parameters) {
-		this.parameters = parameters;
+	public void setProperties(Map<String, String> properties) {
+		this.properties = properties;
 	}
 	
 	public Long getAmountOfTimes() {

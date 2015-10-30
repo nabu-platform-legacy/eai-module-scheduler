@@ -24,22 +24,22 @@ abstract public class BaseSchedulerGUIManager<C extends BaseSchedulerConfigurati
 
 	public <V> void setValue(A instance, Property<V> property, V value) {
 		if ("service".equals(property.getName())) {
-			Map<String, String> parameters = getConfiguration(instance).getParameters();
-			if (parameters == null) {
-				parameters = new LinkedHashMap<String, String>();
+			Map<String, String> properties = getConfiguration(instance).getProperties();
+			if (properties == null) {
+				properties = new LinkedHashMap<String, String>();
 			}
 			else {
-				parameters.clear();
+				properties.clear();
 			}
 			if (value != null) {
 				DefinedService service = (DefinedService) value;
 				for (Element<?> element : TypeUtils.getAllChildren(service.getServiceInterface().getInputDefinition())) {
-					parameters.put(element.getName(), parameters.get(element.getName()));
+					properties.put(element.getName(), properties.get(element.getName()));
 				}
 			}
-			getConfiguration(instance).setParameters(parameters);
+			getConfiguration(instance).setProperties(properties);
 		}
-		if (!"parameters".equals(property.getName())) {
+		if (!"properties".equals(property.getName())) {
 			super.setValue(instance, property, value);
 		}
 	}

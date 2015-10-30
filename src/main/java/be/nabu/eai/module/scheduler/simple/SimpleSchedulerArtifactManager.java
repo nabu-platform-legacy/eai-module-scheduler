@@ -12,7 +12,7 @@ public class SimpleSchedulerArtifactManager extends JAXBArtifactManager<SimpleSc
 
 	@Override
 	protected SimpleSchedulerArtifact newInstance(String id, ResourceContainer<?> container, Repository repository) {
-		return new SimpleSchedulerArtifact(id, container);
+		return new SimpleSchedulerArtifact(id, container, repository);
 	}
 
 }

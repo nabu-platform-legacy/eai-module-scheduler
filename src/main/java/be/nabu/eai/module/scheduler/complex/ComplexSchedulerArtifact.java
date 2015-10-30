@@ -11,14 +11,15 @@ import org.slf4j.LoggerFactory;
 import be.nabu.eai.module.scheduler.base.BaseSchedulerArtifact;
 import be.nabu.eai.module.scheduler.complex.ComplexSchedulerConfiguration.DayOfWeek;
 import be.nabu.eai.module.scheduler.complex.ComplexSchedulerConfiguration.MonthOfYear;
+import be.nabu.eai.repository.api.Repository;
 import be.nabu.libs.resources.api.ResourceContainer;
 
 public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSchedulerConfiguration> {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
-	public ComplexSchedulerArtifact(String id, ResourceContainer<?> directory) {
-		super(id, directory, "scheduler-complex.xml", ComplexSchedulerConfiguration.class);
+	public ComplexSchedulerArtifact(String id, ResourceContainer<?> directory, Repository repository) {
+		super(id, directory, "scheduler-complex.xml", ComplexSchedulerConfiguration.class, repository);
 	}
 
 	@Override
