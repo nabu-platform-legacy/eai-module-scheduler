@@ -1,17 +1,21 @@
 package be.nabu.eai.module.scheduler.base;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import be.nabu.eai.api.Enumerator;
+import be.nabu.eai.api.ValueEnumerator;
 import be.nabu.eai.module.scheduler.provider.SchedulerProviderArtifact;
 import be.nabu.eai.repository.jaxb.ArtifactXMLAdapter;
 import be.nabu.eai.repository.util.KeyValueMapAdapter;
 import be.nabu.libs.services.api.DefinedService;
 
-@XmlType(propOrder = { "enabled", "service", "amountOfTimes", "provider", "allowOverlap", "properties" })
+@XmlType(propOrder = { "enabled", "service", "amountOfTimes", "provider", "allowOverlap", "targets", "properties" })
 public class BaseSchedulerConfiguration {
 	
 	private boolean enabled;
@@ -20,6 +24,7 @@ public class BaseSchedulerConfiguration {
 	private Long amountOfTimes;
 	private SchedulerProviderArtifact provider;
 	private boolean allowOverlap;
+	private List<String> targets;
 
 	public boolean isEnabled() {
 		return enabled;
@@ -67,5 +72,25 @@ public class BaseSchedulerConfiguration {
 	}
 	public void setAllowOverlap(boolean allowOverlap) {
 		this.allowOverlap = allowOverlap;
+	}
+	
+	@ValueEnumerator(enumerator = TargetEnumerator.class)
+	public List<String> getTargets() {
+		return targets;
+	}
+	public void setTargets(List<String> target) {
+		this.targets = target;
+	}
+	
+	public static class TargetEnumerator implements Enumerator {
+
+		@Override
+		public List<?> enumerate() {
+			List<String> targets = new ArrayList<String>();
+			targets.add("$any");
+			targets.add("$all");
+			return targets;
+		}
+		
 	}
 }
