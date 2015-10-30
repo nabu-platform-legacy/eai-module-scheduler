@@ -1,4 +1,4 @@
-package be.nabu.eai.artifacts.scheduler.complex;
+package be.nabu.eai.modules.scheduler.complex;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import be.nabu.eai.api.Enumerator;
 import be.nabu.eai.api.ValueEnumerator;
-import be.nabu.eai.artifacts.scheduler.base.BaseSchedulerConfiguration;
+import be.nabu.eai.modules.scheduler.base.BaseSchedulerConfiguration;
 
 @XmlRootElement(name = "complexScheduler")
 @XmlType(propOrder = { "year", "monthOfYear", "dayOfMonth", "dayOfWeek", "hour", "minute", "second" })

@@ -1,4 +1,4 @@
-package be.nabu.eai.artifacts.scheduler.provider;
+package be.nabu.eai.modules.scheduler.provider;
 
 import be.nabu.eai.repository.api.Repository;
 import be.nabu.eai.repository.managers.base.JAXBArtifactManager;

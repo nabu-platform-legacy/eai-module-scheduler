@@ -1,4 +1,4 @@
-package be.nabu.eai.artifacts.scheduler.provider;
+package be.nabu.eai.modules.scheduler.provider;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

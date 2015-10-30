@@ -1,4 +1,4 @@
-package be.nabu.eai.artifacts.scheduler.provider.api;
+package be.nabu.eai.modules.scheduler.provider.api;
 
 import java.util.Date;
 

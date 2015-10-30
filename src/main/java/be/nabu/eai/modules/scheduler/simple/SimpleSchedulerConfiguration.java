@@ -1,9 +1,9 @@
-package be.nabu.eai.artifacts.scheduler.simple;
+package be.nabu.eai.modules.scheduler.simple;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import be.nabu.eai.artifacts.scheduler.base.BaseSchedulerConfiguration;
+import be.nabu.eai.modules.scheduler.base.BaseSchedulerConfiguration;
 
 @XmlRootElement(name = "simpleScheduler")
 @XmlType(propOrder = { "repeatInterval" })

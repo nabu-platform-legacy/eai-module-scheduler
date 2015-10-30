@@ -1,6 +1,6 @@
-package be.nabu.eai.artifacts.scheduler.provider;
+package be.nabu.eai.modules.scheduler.provider;
 
-import be.nabu.eai.artifacts.scheduler.base.BaseSchedulerArtifact;
+import be.nabu.eai.modules.scheduler.base.BaseSchedulerArtifact;
 
 public class SchedulerRunner implements Runnable {
 
