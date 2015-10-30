@@ -60,7 +60,7 @@ public class Scheduler implements Runnable {
 						}
 						// only run it if there is no overlap or it is allowed
 						if (scheduler.getConfiguration().isAllowOverlap() || futures.get(scheduler).isEmpty()) {
-							futures.get(scheduler).add(schedulerProviderArtifact.submit(new SchedulerRunner(scheduler)));
+							futures.get(scheduler).add(schedulerProviderArtifact.submit(new SchedulerRunner(scheduler, nextRun)));
 							nextRun = scheduler.getNextRun(nextRun);
 						}
 					}
