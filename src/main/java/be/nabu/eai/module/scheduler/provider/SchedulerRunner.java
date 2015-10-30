@@ -1,5 +1,7 @@
 package be.nabu.eai.module.scheduler.provider;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -33,6 +35,7 @@ public class SchedulerRunner implements Runnable {
 			// create the input for the framework service
 			DefinedService frameworkService = scheduled.getConfiguration().getProvider().getConfiguration().getRunService();
 			ComplexContent frameworkInput = frameworkService.getServiceInterface().getInputDefinition().newInstance();
+			frameworkInput.set("targets", scheduled.getConfiguration().getTargets() == null || scheduled.getConfiguration().getTargets().isEmpty() ? new ArrayList<String>(Arrays.asList(new String [] { "$any" })) : scheduled.getConfiguration().getTargets());
 			frameworkInput.set("schedulerId", scheduled.getId());
 			frameworkInput.set("serviceId", scheduled.getConfiguration().getService().getId());
 			frameworkInput.set("serviceInput", content);
