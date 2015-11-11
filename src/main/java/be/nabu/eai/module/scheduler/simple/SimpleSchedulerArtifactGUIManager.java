@@ -25,4 +25,8 @@ public class SimpleSchedulerArtifactGUIManager extends BaseSchedulerGUIManager<S
 		return new SimpleSchedulerArtifact(entry.getId(), entry.getContainer(), entry.getRepository());
 	}
 
+	@Override
+	public String getCategory() {
+		return "Scheduling";
+	}
 }

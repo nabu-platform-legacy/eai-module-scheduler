@@ -25,4 +25,8 @@ public class ComplexSchedulerArtifactGUIManager extends BaseSchedulerGUIManager<
 		return new ComplexSchedulerArtifact(entry.getId(), entry.getContainer(), entry.getRepository());
 	}
 
+	@Override
+	public String getCategory() {
+		return "Scheduling";
+	}
 }
