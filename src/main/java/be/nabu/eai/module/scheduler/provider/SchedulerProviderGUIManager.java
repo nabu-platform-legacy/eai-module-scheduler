@@ -22,7 +22,7 @@ public class SchedulerProviderGUIManager extends BaseJAXBGUIManager<SchedulerPro
 
 	@Override
 	protected SchedulerProviderArtifact newInstance(MainController controller, RepositoryEntry entry, Value<?>... values) throws IOException {
-		return new SchedulerProviderArtifact(entry.getId(), entry.getContainer());
+		return new SchedulerProviderArtifact(entry.getId(), entry.getContainer(), entry.getRepository());
 	}
 	
 	@Override

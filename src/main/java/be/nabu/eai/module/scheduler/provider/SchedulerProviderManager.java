@@ -12,7 +12,7 @@ public class SchedulerProviderManager extends JAXBArtifactManager<SchedulerProvi
 
 	@Override
 	protected SchedulerProviderArtifact newInstance(String id, ResourceContainer<?> container, Repository repository) {
-		return new SchedulerProviderArtifact(id, container);
+		return new SchedulerProviderArtifact(id, container, repository);
 	}
 
 }

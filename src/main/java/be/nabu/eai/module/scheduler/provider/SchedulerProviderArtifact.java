@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import be.nabu.eai.repository.api.Repository;
 import be.nabu.eai.repository.artifacts.jaxb.JAXBArtifact;
 import be.nabu.libs.artifacts.api.StartableArtifact;
 import be.nabu.libs.artifacts.api.StoppableArtifact;
@@ -14,9 +15,11 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 
 	private ExecutorService executors;
 	private Thread schedulerThread;
+	private Repository repository;
 	
-	public SchedulerProviderArtifact(String id, ResourceContainer<?> directory) {
+	public SchedulerProviderArtifact(String id, ResourceContainer<?> directory, Repository repository) {
 		super(id, directory, "scheduler-provider.xml", SchedulerProviderConfiguration.class);
+		this.repository = repository;
 	}
 
 	@Override
@@ -53,4 +56,8 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 		return null;
 	}
 
+	public Repository getRepository() {
+		return repository;
+	}
+	
 }
