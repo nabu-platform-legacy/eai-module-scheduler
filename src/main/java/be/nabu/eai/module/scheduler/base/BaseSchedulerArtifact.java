@@ -8,17 +8,10 @@ import be.nabu.libs.resources.api.ResourceContainer;
 
 public abstract class BaseSchedulerArtifact<T extends BaseSchedulerConfiguration> extends JAXBArtifact<T> {
 	
-	private Repository repository;
-
 	public BaseSchedulerArtifact(String id, ResourceContainer<?> directory, String fileName, Class<T> configurationClazz, Repository repository) {
-		super(id, directory, fileName, configurationClazz);
-		this.repository = repository;
+		super(id, directory, repository, fileName, configurationClazz);
 	}
 
 	abstract public Date getNextRun(Date fromTimestamp);
-
-	public Repository getRepository() {
-		return repository;
-	}
 
 }

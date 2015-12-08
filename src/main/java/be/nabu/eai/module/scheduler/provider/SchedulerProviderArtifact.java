@@ -15,11 +15,9 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 
 	private ExecutorService executors;
 	private Thread schedulerThread;
-	private Repository repository;
 	
 	public SchedulerProviderArtifact(String id, ResourceContainer<?> directory, Repository repository) {
-		super(id, directory, "scheduler-provider.xml", SchedulerProviderConfiguration.class);
-		this.repository = repository;
+		super(id, directory, repository, "scheduler-provider.xml", SchedulerProviderConfiguration.class);
 	}
 
 	@Override
@@ -55,9 +53,4 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 		}
 		return null;
 	}
-
-	public Repository getRepository() {
-		return repository;
-	}
-	
 }
