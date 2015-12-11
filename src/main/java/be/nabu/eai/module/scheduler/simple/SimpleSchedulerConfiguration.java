@@ -14,7 +14,6 @@ public class SimpleSchedulerConfiguration extends BaseSchedulerConfiguration {
 	public long getRepeatInterval() {
 		return repeatInterval;
 	}
-
 	public void setRepeatInterval(long repeatInterval) {
 		this.repeatInterval = repeatInterval;
 	}

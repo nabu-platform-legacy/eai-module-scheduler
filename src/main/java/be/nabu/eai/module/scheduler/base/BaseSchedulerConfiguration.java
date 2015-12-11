@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import be.nabu.eai.api.Enumerator;
+import be.nabu.eai.api.EnvironmentSpecific;
 import be.nabu.eai.api.ValueEnumerator;
 import be.nabu.eai.module.scheduler.provider.SchedulerProviderArtifact;
 import be.nabu.eai.repository.jaxb.ArtifactXMLAdapter;
@@ -26,6 +27,7 @@ public class BaseSchedulerConfiguration {
 	private boolean allowOverlap;
 	private List<String> targets;
 
+	@EnvironmentSpecific
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -59,6 +61,7 @@ public class BaseSchedulerConfiguration {
 		this.amountOfTimes = amountOfTimes;
 	}
 	
+	@EnvironmentSpecific
 	@XmlJavaTypeAdapter(value = ArtifactXMLAdapter.class)
 	public SchedulerProviderArtifact getProvider() {
 		return provider;
@@ -74,6 +77,7 @@ public class BaseSchedulerConfiguration {
 		this.allowOverlap = allowOverlap;
 	}
 	
+	@EnvironmentSpecific
 	@ValueEnumerator(enumerator = TargetEnumerator.class)
 	public List<String> getTargets() {
 		return targets;

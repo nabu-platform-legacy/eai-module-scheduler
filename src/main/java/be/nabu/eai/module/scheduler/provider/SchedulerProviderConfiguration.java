@@ -3,6 +3,7 @@ package be.nabu.eai.module.scheduler.provider;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import be.nabu.eai.api.EnvironmentSpecific;
 import be.nabu.eai.api.InterfaceFilter;
 import be.nabu.eai.repository.jaxb.ArtifactXMLAdapter;
 import be.nabu.libs.services.api.DefinedService;
@@ -22,12 +23,16 @@ public class SchedulerProviderConfiguration {
 	public void setRunService(DefinedService runService) {
 		this.runService = runService;
 	}
+	
+	@EnvironmentSpecific
 	public Integer getPoolSize() {
 		return poolSize;
 	}
 	public void setPoolSize(Integer poolSize) {
 		this.poolSize = poolSize;
 	}
+	
+	@EnvironmentSpecific
 	public boolean isEnabled() {
 		return enabled;
 	}
