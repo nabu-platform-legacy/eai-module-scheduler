@@ -24,9 +24,9 @@ public class Scheduler implements Runnable {
 	private Map<BaseSchedulerArtifact<?>, List<Future<?>>> futures = new HashMap<BaseSchedulerArtifact<?>, List<Future<?>>>();
 	
 	/**
-	 * The timestamp we were aiming up when we woke up
+	 * The timestamps we were aiming for when we woke up
 	 */
-	private Date scheduledTimestamp = new Date();
+	private Map<String, Date> scheduledTimestamps = new HashMap<String, Date>();
 
 	public Scheduler(SchedulerProviderArtifact schedulerProviderArtifact) {
 		this.schedulerProviderArtifact = schedulerProviderArtifact;
@@ -45,7 +45,10 @@ public class Scheduler implements Runnable {
 					if (!scheduler.getConfiguration().isEnabled()) {
 						continue;
 					}
-					Date nextRun = scheduler.getNextRun(scheduledTimestamp);
+					if (!scheduledTimestamps.containsKey(scheduler.getId())) {
+						scheduledTimestamps.put(scheduler.getId(), scheduler.getInitialRun(newTimestamp));
+					}
+					Date nextRun = scheduledTimestamps.get(scheduler.getId());
 					// if it is before or on the new timestamp, we need to run it
 					if (nextRun != null && !nextRun.after(newTimestamp)) {
 						if (!futures.containsKey(scheduler)) {
@@ -58,11 +61,14 @@ public class Scheduler implements Runnable {
 								iterator.remove();
 							}
 						}
-						// only run it if there is no overlap or it is allowed
-						if (scheduler.getConfiguration().isAllowOverlap() || futures.get(scheduler).isEmpty()) {
-							futures.get(scheduler).add(schedulerProviderArtifact.submit(new SchedulerRunner(scheduler, nextRun)));
+						while(!nextRun.after(newTimestamp)) {
+							// only run it if there is no overlap or it is allowed
+							if (scheduler.getConfiguration().isAllowOverlap() || futures.get(scheduler).isEmpty()) {
+								futures.get(scheduler).add(schedulerProviderArtifact.submit(new SchedulerRunner(scheduler, nextRun)));
+							}
 							nextRun = scheduler.getNextRun(nextRun);
 						}
+						scheduledTimestamps.put(scheduler.getId(), nextRun);
 					}
 					// note that even for those that are now being run, we calculate the next run, it could come before whatever other scheduler we have in mind
 					if (nextRun != null && nextRun.after(newTimestamp) && (earliestAfter == null || nextRun.before(earliestAfter))) {
@@ -73,7 +79,6 @@ public class Scheduler implements Runnable {
 					logger.error("Could not process scheduler: " + scheduler, e);
 				}
 			}
-			scheduledTimestamp = newTimestamp;
 			// no more schedulers to run, shut it down
 			if (earliestAfter == null) {
 				try {
@@ -86,7 +91,10 @@ public class Scheduler implements Runnable {
 			}
 			else {
 				try {
-					Thread.sleep(earliestAfter.getTime() - new Date().getTime());
+					long millis = earliestAfter.getTime() - new Date().getTime();
+					if (millis > 0) {
+						Thread.sleep(millis);
+					}
 				}
 				// if interrupted, we stop
 				catch (InterruptedException e) {
@@ -96,6 +104,12 @@ public class Scheduler implements Runnable {
 		}
 	}
 
+	public void refresh() {
+		synchronized(this) {
+			scheduledArtifacts = null;
+		}
+	}
+	
 	private List<BaseSchedulerArtifact<?>> getSchedulers() {
 		if (scheduledArtifacts == null) {
 			synchronized(this) {

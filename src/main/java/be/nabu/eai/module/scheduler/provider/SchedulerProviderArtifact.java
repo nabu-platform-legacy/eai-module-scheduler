@@ -15,6 +15,7 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 
 	private ExecutorService executors;
 	private Thread schedulerThread;
+	private Scheduler scheduler;
 	
 	public SchedulerProviderArtifact(String id, ResourceContainer<?> directory, Repository repository) {
 		super(id, directory, repository, "scheduler-provider.xml", SchedulerProviderConfiguration.class);
@@ -30,6 +31,7 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 			schedulerThread.interrupt();
 			schedulerThread = null;
 		}
+		scheduler = null;
 	}
 
 	@Override
@@ -37,7 +39,8 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 		if (getConfiguration().isEnabled()) {
 			int poolSize = getConfiguration().getPoolSize() == null || getConfiguration().getPoolSize() <= 0 ? 1 : getConfiguration().getPoolSize();
 			this.executors = Executors.newFixedThreadPool(poolSize);
-			this.schedulerThread = new Thread(new Scheduler(this));
+			scheduler = new Scheduler(this);
+			this.schedulerThread = new Thread(scheduler);
 			this.schedulerThread.start();
 		}
 	}
@@ -51,6 +54,14 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 		if (executors != null) {
 			return executors.submit(runnable);
 		}
-		return null;
+		else {
+			throw new IllegalStateException("No thread pool available");
+		}
+	}
+	
+	public void refresh() {
+		if (scheduler != null) {
+			scheduler.refresh();
+		}
 	}
 }

@@ -16,7 +16,7 @@ import be.nabu.eai.repository.jaxb.ArtifactXMLAdapter;
 import be.nabu.eai.repository.util.KeyValueMapAdapter;
 import be.nabu.libs.services.api.DefinedService;
 
-@XmlType(propOrder = { "enabled", "service", "amountOfTimes", "provider", "allowOverlap", "targets", "properties" })
+@XmlType(propOrder = { "enabled", "startImmediately", "service", "amountOfTimes", "provider", "allowOverlap", "targets", "properties" })
 public class BaseSchedulerConfiguration {
 	
 	private boolean enabled;
@@ -26,6 +26,7 @@ public class BaseSchedulerConfiguration {
 	private SchedulerProviderArtifact provider;
 	private boolean allowOverlap;
 	private List<String> targets;
+	private boolean startImmediately;
 
 	@EnvironmentSpecific
 	public boolean isEnabled() {
@@ -59,6 +60,13 @@ public class BaseSchedulerConfiguration {
 	}
 	public void setAmountOfTimes(Long amountOfTimes) {
 		this.amountOfTimes = amountOfTimes;
+	}
+	
+	public boolean isStartImmediately() {
+		return startImmediately;
+	}
+	public void setStartImmediately(boolean startImmediately) {
+		this.startImmediately = startImmediately;
 	}
 	
 	@EnvironmentSpecific
