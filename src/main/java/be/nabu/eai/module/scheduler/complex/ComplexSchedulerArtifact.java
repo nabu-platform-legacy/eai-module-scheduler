@@ -17,6 +17,22 @@ import be.nabu.eai.module.scheduler.complex.ComplexSchedulerConfiguration.MonthO
 import be.nabu.eai.repository.api.Repository;
 import be.nabu.libs.resources.api.ResourceContainer;
 
+/**
+ * As a general note: calendar.set() is messed up. According to the spec recalculations are not done on set() but they _are_ done on add().
+ * Note that you can supposedly trigger a calculation with getTime(). But consider this:
+ * 
+ * date = 2015-01-12
+ * for (i in weeksOfMonth)
+ * 		calendar.set(WEEK_OF_MONTH, i)
+ * This ended up looping first in 2014 (!!!) then suddenly shifting to 2017. Even though the "reset date" at the top correctly printed out the reset date
+ * I switch to this logic:
+ * 
+ * calendar.set(WEEK_OF_MONTH, 1)
+ * for (i in weeksOfMonth)
+ * 		calendar.add(WEEK_OF_MONTH, 1)
+ * 
+ * And this works like a charm
+ */
 public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSchedulerConfiguration> {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -77,27 +93,29 @@ public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSched
 					}
 				}
 				else {
+					calendar.set(Calendar.MINUTE, 0);
 					for (int minute = 0; minute < 60; minute++) {
 						if (configuration.getMinute().isEmpty() || configuration.getMinute().contains(hour)) {
-							calendar.set(Calendar.MINUTE, minute);
 							if (granularity == Granularity.MINUTE) {
 								if (calendar.getTime().after(fromTimestamp)) {
 									return calendar.getTime();
 								}
 							}
 							else {
+								calendar.set(Calendar.SECOND, 0);
 								for (int second = 0; second < 60; second++) {
 									if (configuration.getMinute().isEmpty() || configuration.getMinute().contains(hour)) {
-										calendar.set(Calendar.SECOND, second);
 										if (granularity == Granularity.SECOND) {
 											if (calendar.getTime().after(fromTimestamp)) {
 												return calendar.getTime();
 											}
 										}
 									}
+									calendar.add(Calendar.SECOND, 1);
 								}
 							}
 						}
+						calendar.add(Calendar.MINUTE, 1);
 					}
 				}
 			}
@@ -155,11 +173,24 @@ public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSched
 			// reset
 			calendar.set(Calendar.YEAR, year);
 			calendar.set(Calendar.MONTH, 0);
-			calendar.set(Calendar.DAY_OF_MONTH, 1);
+			if (!configuration.getDayOfWeek().isEmpty() || !configuration.getWeekOfMonth().isEmpty()) {
+				calendar.set(Calendar.WEEK_OF_MONTH, 1);
+				calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+			}
+			else {
+				calendar.set(Calendar.DAY_OF_MONTH, 1);
+			}
 			calendar.set(Calendar.HOUR, 0);
 			calendar.set(Calendar.MINUTE, 0);
 			calendar.set(Calendar.SECOND, 0);
 			calendar.set(Calendar.MILLISECOND, 0);
+			// IMPORTANT: from the javadoc https://docs.oracle.com/javase/8/docs/api/java/util/Calendar.html:
+			// "Any field values set in a Calendar will not be interpreted until it needs to calculate its time value (milliseconds from the Epoch) or values of the calendar fields. Calling the get, getTimeInMillis, getTime, add and roll involves such calculation." 
+			// the calculation was way off before I added a System.out.println() to check the actual time set in the calendar
+			// the act of calling getTime() triggers an update in the calendar which actually calculates the values
+			// this is _required_ to get the correct results here, otherwise it is waaay off base
+			// talk about hidden functionality
+			calendar.getTime();
 			if (Granularity.YEAR == granularity) {
 				if (calendar.getTime().after(fromTimestamp)) {
 					return calendar.getTime();
@@ -176,10 +207,10 @@ public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSched
 					else {
 						// working with day of week and/or week of month
 						if (!configuration.getDayOfWeek().isEmpty() || !configuration.getWeekOfMonth().isEmpty()) {
+							calendar.set(Calendar.WEEK_OF_MONTH, 1);
 							for (int i = 1; i <= calendar.getActualMaximum(Calendar.WEEK_OF_MONTH); i++) {
-								System.out.println("Week: " + i);
 								if (configuration.getWeekOfMonth().isEmpty() || configuration.getWeekOfMonth().contains(i)) {
-									calendar.set(Calendar.WEEK_OF_MONTH, i);
+									calendar.getTime();
 									if (granularity == Granularity.WEEK) {
 										if (calendar.getTime().after(fromTimestamp)) {
 											return calendar.getTime();
@@ -188,6 +219,7 @@ public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSched
 									else {
 										for (DayOfWeek dayOfWeek : daysOfWeek) {
 											calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek.getCalendarField());
+											calendar.getTime();
 											if (granularity == Granularity.DAY) {
 												if (calendar.getTime().after(fromTimestamp)) {
 													return calendar.getTime();
@@ -202,13 +234,14 @@ public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSched
 										}
 									}
 								}
+								calendar.add(Calendar.WEEK_OF_MONTH, 1);
 							}
 						}
 						// working with regular day of month
 						else {
+							calendar.set(Calendar.DAY_OF_MONTH, 1);
 							for (int i = 1; i <= calendar.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
 								if (configuration.getDayOfMonth().isEmpty() || configuration.getDayOfMonth().contains(i)) {
-									calendar.set(Calendar.DAY_OF_MONTH, i);
 									if (granularity == Granularity.DAY) {
 										if (calendar.getTime().after(fromTimestamp)) {
 											return calendar.getTime();
@@ -221,6 +254,7 @@ public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSched
 										}
 									}
 								}
+								calendar.add(Calendar.DAY_OF_MONTH, 1);
 							}
 						}
 					}
