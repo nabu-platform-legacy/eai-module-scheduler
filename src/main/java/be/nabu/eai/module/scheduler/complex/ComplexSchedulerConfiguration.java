@@ -12,13 +12,14 @@ import be.nabu.eai.api.ValueEnumerator;
 import be.nabu.eai.module.scheduler.base.BaseSchedulerConfiguration;
 
 @XmlRootElement(name = "complexScheduler")
-@XmlType(propOrder = { "year", "monthOfYear", "dayOfMonth", "dayOfWeek", "hour", "minute", "second" })
+@XmlType(propOrder = { "year", "monthOfYear", "dayOfMonth", "weekOfMonth", "dayOfWeek", "hour", "minute", "second" })
 public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 	
 	private List<Integer> year;
 	private List<MonthOfYear> monthOfYear;
 	private List<Integer> dayOfMonth;
 	private List<DayOfWeek> dayOfWeek;
+	private List<Integer> weekOfMonth;
 	private List<Integer> hour;
 	private List<Integer> minute;
 	private List<Integer> second;
@@ -57,12 +58,18 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 		}
 	}
 	public List<DayOfWeek> getDayOfWeek() {
+		if (dayOfWeek == null) {
+			dayOfWeek = new ArrayList<DayOfWeek>();
+		}
 		return dayOfWeek;
 	}
 	public void setDayOfWeek(List<DayOfWeek> dayOfWeek) {
 		this.dayOfWeek = dayOfWeek;
 	}
 	public List<MonthOfYear> getMonthOfYear() {
+		if (monthOfYear == null) {
+			monthOfYear = new ArrayList<MonthOfYear>();
+		}
 		return monthOfYear;
 	}
 	public void setMonthOfYear(List<MonthOfYear> monthOfYear) {
@@ -70,6 +77,9 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 	}
 	@ValueEnumerator(enumerator = YearEnumerator.class)
 	public List<Integer> getYear() {
+		if (year == null) {
+			year = new ArrayList<Integer>();
+		}
 		return year;
 	}
 	public void setYear(List<Integer> year) {
@@ -77,6 +87,9 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 	}
 	@ValueEnumerator(enumerator = DayEnumerator.class)
 	public List<Integer> getDayOfMonth() {
+		if (dayOfMonth == null) {
+			dayOfMonth = new ArrayList<Integer>();
+		}
 		return dayOfMonth;
 	}
 	public void setDayOfMonth(List<Integer> dayOfMonth) {
@@ -84,6 +97,9 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 	}
 	@ValueEnumerator(enumerator = HourEnumerator.class)
 	public List<Integer> getHour() {
+		if (hour == null) {
+			hour = new ArrayList<Integer>();
+		}
 		return hour;
 	}
 	public void setHour(List<Integer> hour) {
@@ -91,6 +107,9 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 	}
 	@ValueEnumerator(enumerator = MinuteEnumerator.class)
 	public List<Integer> getMinute() {
+		if (minute == null) {
+			minute = new ArrayList<Integer>();
+		}
 		return minute;
 	}
 	public void setMinute(List<Integer> minute) {
@@ -98,12 +117,36 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 	}
 	@ValueEnumerator(enumerator = MinuteEnumerator.class)
 	public List<Integer> getSecond() {
+		if (second == null) {
+			second = new ArrayList<Integer>();
+		}
 		return second;
 	}
 	public void setSecond(List<Integer> second) {
 		this.second = second;
 	}
 	
+	@ValueEnumerator(enumerator = WeekOfMonthEnumerator.class)
+	public List<Integer> getWeekOfMonth() {
+		if (weekOfMonth == null) {
+			weekOfMonth = new ArrayList<Integer>();
+		}
+		return weekOfMonth;
+	}
+	public void setWeekOfMonth(List<Integer> weekOfMonth) {
+		this.weekOfMonth = weekOfMonth;
+	}
+
+	public static class WeekOfMonthEnumerator implements Enumerator {
+		@Override
+		public List<?> enumerate() {
+			List<Integer> values = new ArrayList<Integer>();
+			for (int i = 1; i <= 5; i++) {
+				values.add(i);
+			}
+			return values;
+		}
+	}
 	public static class DayEnumerator implements Enumerator {
 		@Override
 		public List<?> enumerate() {

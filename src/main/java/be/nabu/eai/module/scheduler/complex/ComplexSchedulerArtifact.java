@@ -1,9 +1,12 @@
 package be.nabu.eai.module.scheduler.complex;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,175 +41,193 @@ public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSched
 		}
 	}
 
+	public enum Granularity {
+		YEAR, MONTH, WEEK, DAY, HOUR, MINUTE, SECOND
+	}
+	
+	public static Granularity getGranularity(ComplexSchedulerConfiguration configuration) {
+		if (!configuration.getSecond().isEmpty()) {
+			return Granularity.SECOND;
+		}
+		else if (!configuration.getMinute().isEmpty()) {
+			return Granularity.MINUTE;
+		}
+		else if (!configuration.getHour().isEmpty()) {
+			return Granularity.HOUR;
+		}
+		else if (!configuration.getDayOfMonth().isEmpty() || !configuration.getDayOfWeek().isEmpty()) {
+			return Granularity.DAY;
+		}
+		else if (!configuration.getWeekOfMonth().isEmpty()) {
+			return Granularity.WEEK;
+		}
+		else if (!configuration.getMonthOfYear().isEmpty()) {
+			return Granularity.MONTH;
+		}
+		return Granularity.YEAR;
+	}
+	
+	private static Date findTimeMatch(ComplexSchedulerConfiguration configuration, Granularity granularity, Date fromTimestamp, Calendar calendar) {
+		for (int hour = 0; hour < 24; hour++) {
+			if (configuration.getHour().isEmpty() || configuration.getHour().contains(hour)) {
+				calendar.set(Calendar.HOUR_OF_DAY, hour);
+				if (granularity == Granularity.HOUR) {
+					if (calendar.getTime().after(fromTimestamp)) {
+						return calendar.getTime();
+					}
+				}
+				else {
+					for (int minute = 0; minute < 60; minute++) {
+						if (configuration.getMinute().isEmpty() || configuration.getMinute().contains(hour)) {
+							calendar.set(Calendar.MINUTE, minute);
+							if (granularity == Granularity.MINUTE) {
+								if (calendar.getTime().after(fromTimestamp)) {
+									return calendar.getTime();
+								}
+							}
+							else {
+								for (int second = 0; second < 60; second++) {
+									if (configuration.getMinute().isEmpty() || configuration.getMinute().contains(hour)) {
+										calendar.set(Calendar.SECOND, second);
+										if (granularity == Granularity.SECOND) {
+											if (calendar.getTime().after(fromTimestamp)) {
+												return calendar.getTime();
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	public static Date calculateNextRun(ComplexSchedulerConfiguration configuration, Date fromTimestamp) throws IOException {
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(fromTimestamp);
-		// ----------------------------------- MATCH YEAR
-		// if we have configured a year, first go to first year after the one we just hit
-		boolean matchedAny = false;
-		boolean matchFound = false;
-		if (configuration.getYear() != null && !configuration.getYear().isEmpty()) {
-			Collections.sort(configuration.getYear());
-			for (Integer year : configuration.getYear()) {
-				if (year > calendar.get(Calendar.YEAR)) {
-					calendar.set(Calendar.YEAR, year);
-					matchFound = true;
-					break;
-				}
-			}
-			if (!matchFound) {
-				configuration.setEnabled(false);
-				return null;
+		
+		Granularity granularity = getGranularity(configuration);
+		List<Integer> years = new ArrayList<Integer>();
+		if (!configuration.getYear().isEmpty()) {
+			years.addAll(configuration.getYear());
+			Collections.sort(years);
+		}
+		else {
+			// it can only be in this year or the next
+			years.addAll(Arrays.asList(calendar.get(Calendar.YEAR), calendar.get(Calendar.YEAR) + 1));
+		}
+		
+		// the granularity defines whether we have a full listing of an empty field
+		// for instance if you only pass in an hour, everything "above" hour (day, month, year) is "every" whereas everything "below" is the first: minute, second
+		// this would mean that it would effectively run once every hour of every day of every month of every year
+		List<MonthOfYear> monthsOfYear = new ArrayList<MonthOfYear>();
+		if (!configuration.getMonthOfYear().isEmpty()) {
+			monthsOfYear.addAll(configuration.getMonthOfYear());
+			Collections.sort(monthsOfYear);
+		}
+		else {
+			if (granularity.ordinal() > Granularity.MONTH.ordinal()) {
+				monthsOfYear.addAll(Arrays.asList(MonthOfYear.values()));
 			}
 			else {
-				matchFound = false;
-				matchedAny = true;
+				monthsOfYear.add(MonthOfYear.JANUARY);
 			}
 		}
 		
-		// ----------------------------------- MATCH MONTH
-		// if we have configured a year, first go to first year after the one we just hit
-		if (configuration.getMonthOfYear() != null && !configuration.getMonthOfYear().isEmpty()) {
-			Collections.sort(configuration.getMonthOfYear());
-			// calendar month is 0-based
-			MonthOfYear currentMonth = MonthOfYear.values()[calendar.get(Calendar.MONTH)];
-			for (MonthOfYear month : configuration.getMonthOfYear()) {
-				if (month.ordinal() > currentMonth.ordinal()) {
-					calendar.set(Calendar.MONTH, month.ordinal());
-					matchFound = false;
-					break;
-				}
-			}
-			// if no next month this year was found, take the first month of next year
-			if (!matchFound) {
-				calendar.add(Calendar.YEAR, 1);
-				calendar.set(Calendar.MONTH, configuration.getMonthOfYear().get(0).ordinal());
+		// we might not need this but precalculate it in case we do
+		List<DayOfWeek> daysOfWeek = new ArrayList<DayOfWeek>();
+		if (!configuration.getDayOfWeek().isEmpty()) {
+			daysOfWeek.addAll(configuration.getDayOfWeek());
+			Collections.sort(monthsOfYear);
+		}
+		else {
+			if (granularity.ordinal() > Granularity.DAY.ordinal()) {
+				daysOfWeek.addAll(Arrays.asList(DayOfWeek.values()));
 			}
 			else {
-				matchFound = false;
-				matchedAny = true;
+				daysOfWeek.add(DayOfWeek.MONDAY);
 			}
 		}
 		
-		// ----------------------------------- MATCH DAY
-		if (configuration.getDayOfMonth() != null && !configuration.getDayOfMonth().isEmpty()) {
-			Collections.sort(configuration.getDayOfMonth());
-			// day_of_month is 1-based
-			for (int dayOfMonth : configuration.getDayOfMonth()) {
-				if (dayOfMonth > calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-					dayOfMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+		for (int year : years) {
+			// reset
+			calendar.set(Calendar.YEAR, year);
+			calendar.set(Calendar.MONTH, 0);
+			calendar.set(Calendar.DAY_OF_MONTH, 1);
+			calendar.set(Calendar.HOUR, 0);
+			calendar.set(Calendar.MINUTE, 0);
+			calendar.set(Calendar.SECOND, 0);
+			calendar.set(Calendar.MILLISECOND, 0);
+			if (Granularity.YEAR == granularity) {
+				if (calendar.getTime().after(fromTimestamp)) {
+					return calendar.getTime();
 				}
-				if (dayOfMonth > calendar.get(Calendar.DAY_OF_MONTH)) {
-					calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-					matchFound = true;
-					break;
-				}
-			}
-			if (!matchFound) {
-				calendar.add(Calendar.MONTH, 1);
-				calendar.set(Calendar.DAY_OF_MONTH, configuration.getDayOfMonth().get(0));
 			}
 			else {
-				matchFound = false;
-				matchedAny = true;
+				for (MonthOfYear monthOfYear : monthsOfYear) {
+					calendar.set(Calendar.MONTH, monthOfYear.ordinal());
+					if (granularity == Granularity.MONTH) {
+						if (calendar.getTime().after(fromTimestamp)) {
+							return calendar.getTime();
+						}
+					}
+					else {
+						// working with day of week and/or week of month
+						if (!configuration.getDayOfWeek().isEmpty() || !configuration.getWeekOfMonth().isEmpty()) {
+							for (int i = 1; i <= calendar.getActualMaximum(Calendar.WEEK_OF_MONTH); i++) {
+								System.out.println("Week: " + i);
+								if (configuration.getWeekOfMonth().isEmpty() || configuration.getWeekOfMonth().contains(i)) {
+									calendar.set(Calendar.WEEK_OF_MONTH, i);
+									if (granularity == Granularity.WEEK) {
+										if (calendar.getTime().after(fromTimestamp)) {
+											return calendar.getTime();
+										}
+									}	
+									else {
+										for (DayOfWeek dayOfWeek : daysOfWeek) {
+											calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek.getCalendarField());
+											if (granularity == Granularity.DAY) {
+												if (calendar.getTime().after(fromTimestamp)) {
+													return calendar.getTime();
+												}
+											}
+											else {
+												Date findTimeMatch = findTimeMatch(configuration, granularity, fromTimestamp, calendar);
+												if (findTimeMatch != null) {
+													return findTimeMatch;
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+						// working with regular day of month
+						else {
+							for (int i = 1; i <= calendar.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
+								if (configuration.getDayOfMonth().isEmpty() || configuration.getDayOfMonth().contains(i)) {
+									calendar.set(Calendar.DAY_OF_MONTH, i);
+									if (granularity == Granularity.DAY) {
+										if (calendar.getTime().after(fromTimestamp)) {
+											return calendar.getTime();
+										}
+									}
+									else {
+										Date findTimeMatch = findTimeMatch(configuration, granularity, fromTimestamp, calendar);
+										if (findTimeMatch != null) {
+											return findTimeMatch;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
-		else if (configuration.getDayOfWeek() != null && !configuration.getDayOfWeek().isEmpty()) {
-			Collections.sort(configuration.getDayOfWeek());
-			int currentDay = calendar.get(Calendar.DAY_OF_WEEK);
-			// sunday is 1, however we use a _normal_ week where monday is first...
-			if (currentDay == Calendar.SUNDAY) {
-				currentDay = Calendar.SATURDAY;
-			}
-			else {
-				currentDay--;
-			}
-			// because days are 1 based, let's substract 1 for ordinal comparison
-			currentDay--;
-			for (DayOfWeek dayOfWeek : configuration.getDayOfWeek()) {
-				if (dayOfWeek.ordinal() > currentDay) {
-					calendar.set(Calendar.DAY_OF_WEEK, dayOfWeek.getCalendarField());
-					matchFound = true;
-					break;
-				}
-			}
-			if (!matchFound) {
-				calendar.add(Calendar.WEEK_OF_MONTH, 1);
-				calendar.set(Calendar.DAY_OF_WEEK, configuration.getDayOfWeek().get(0).getCalendarField());
-			}
-			else {
-				matchFound = false;
-				matchedAny = true;
-			}
-		}
-		
-		// ----------------------------------- MATCH HOUR
-		if (configuration.getHour() != null && !configuration.getHour().isEmpty()) {
-			Collections.sort(configuration.getHour());
-			// HOUR_OF_DAY is 0-based and has 24 values
-			int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
-			for (int hour : configuration.getHour()) {
-				if (hour > currentHour) {
-					calendar.set(Calendar.HOUR_OF_DAY, hour);
-					matchFound = true;
-					break;
-				}
-			}
-			if (!matchFound) {
-				calendar.add(Calendar.DAY_OF_WEEK, 1);
-				calendar.set(Calendar.HOUR_OF_DAY, configuration.getHour().get(0));
-			}
-			else {
-				matchFound = false;
-				matchedAny = true;
-			}
-		}
-		
-		// ----------------------------------- MATCH MINUTES
-		if (configuration.getMinute() != null && !configuration.getMinute().isEmpty()) {
-			Collections.sort(configuration.getMinute());
-			// MINUTE is 0-based
-			int currentMinute = calendar.get(Calendar.MINUTE);
-			for (int minute : configuration.getMinute()) {
-				if (minute > currentMinute) {
-					calendar.set(Calendar.MINUTE, minute);
-					matchFound = true;
-					break;
-				}
-			}
-			if (!matchFound) {
-				calendar.add(Calendar.HOUR_OF_DAY, 1);
-				calendar.set(Calendar.MINUTE, configuration.getMinute().get(0));
-			}
-			else {
-				matchFound = false;
-				matchedAny = true;
-			}
-		}
-		
-		// ----------------------------------- MATCH SECONDS
-		if (configuration.getSecond() != null && !configuration.getSecond().isEmpty()) {
-			Collections.sort(configuration.getSecond());
-			// SECOND is 0-based
-			int currentSecond = calendar.get(Calendar.SECOND);
-			for (int second : configuration.getSecond()) {
-				if (second > currentSecond) {
-					calendar.set(Calendar.SECOND, second);
-					matchFound = true;
-					break;
-				}
-			}
-			if (!matchFound) {
-				calendar.add(Calendar.MINUTE, 1);
-				calendar.set(Calendar.SECOND, configuration.getSecond().get(0));
-			}
-			else {
-				matchFound = false;
-				matchedAny = true;
-			}
-		}
-		
-		return matchedAny ? calendar.getTime() : null;
+		return null;
 	}
 
 }
