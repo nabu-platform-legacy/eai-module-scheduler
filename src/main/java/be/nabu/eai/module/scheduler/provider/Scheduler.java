@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import be.nabu.eai.module.scheduler.base.BaseSchedulerArtifact;
 import be.nabu.eai.module.scheduler.base.BaseSchedulerConfiguration;
-import be.nabu.eai.repository.api.Node;
 
 public class Scheduler implements Runnable {
 
@@ -115,21 +114,15 @@ public class Scheduler implements Runnable {
 			synchronized(this) {
 				if (scheduledArtifacts == null) {
 					List<BaseSchedulerArtifact<?>> scheduledArtifacts = new ArrayList<BaseSchedulerArtifact<?>>();
-					for (Node node : schedulerProviderArtifact.getRepository().getNodes(BaseSchedulerArtifact.class)) {
+					for (BaseSchedulerArtifact<?> scheduler : schedulerProviderArtifact.getRepository().getArtifacts(BaseSchedulerArtifact.class)) {
 						try {
-							BaseSchedulerArtifact<?> scheduler = (BaseSchedulerArtifact<?>) node.getArtifact();
-							try {
-								BaseSchedulerConfiguration configuration = scheduler.getConfiguration();
-								if (schedulerProviderArtifact.equals(configuration.getProvider())) {
-									scheduledArtifacts.add(scheduler);
-								}
-							}
-							catch (IOException e) {
-								logger.error("Could not load scheduler: " + scheduler, e);
+							BaseSchedulerConfiguration configuration = scheduler.getConfiguration();
+							if (schedulerProviderArtifact.equals(configuration.getProvider())) {
+								scheduledArtifacts.add(scheduler);
 							}
 						}
-						catch (Exception e) {
-							logger.error("Could not load scheduler", e);
+						catch (IOException e) {
+							logger.error("Could not load scheduler: " + scheduler, e);
 						}
 					}
 					this.scheduledArtifacts = scheduledArtifacts;
