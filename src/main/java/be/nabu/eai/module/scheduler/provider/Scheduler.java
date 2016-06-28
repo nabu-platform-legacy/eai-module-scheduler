@@ -121,12 +121,14 @@ public class Scheduler implements Runnable {
 								scheduledArtifacts.add(scheduler);
 							}
 						}
-						catch (IOException e) {
+						catch (Exception e) {
 							logger.error("Could not load scheduler: " + scheduler, e);
 						}
 					}
 					this.scheduledArtifacts = scheduledArtifacts;
 				}
+				// if we wait for return out of synchronized block, it _can_ be set to null by the refresh(), this happened on average 10% of the time at startup
+				return scheduledArtifacts;
 			}
 		}
 		return scheduledArtifacts;
