@@ -37,6 +37,7 @@ public class BaseSchedulerConfiguration {
 		this.enabled = enabled;
 	}
 	
+	@NotNull
 	@XmlJavaTypeAdapter(value = ArtifactXMLAdapter.class)
 	public DefinedService getService() {
 		return service;
