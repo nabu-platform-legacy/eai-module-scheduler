@@ -93,8 +93,8 @@ public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSched
 					}
 				}
 				else {
-					calendar.set(Calendar.MINUTE, 0);
 					for (int minute = 0; minute < 60; minute++) {
+						calendar.set(Calendar.MINUTE, minute);
 						if (configuration.getMinute().isEmpty() || configuration.getMinute().contains(minute)) {
 							if (granularity == Granularity.MINUTE) {
 								if (calendar.getTime().after(fromTimestamp)) {
@@ -102,8 +102,8 @@ public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSched
 								}
 							}
 							else {
-								calendar.set(Calendar.SECOND, 0);
 								for (int second = 0; second < 60; second++) {
+									calendar.set(Calendar.SECOND, second);
 									if (configuration.getMinute().isEmpty() || configuration.getMinute().contains(second)) {
 										if (granularity == Granularity.SECOND) {
 											if (calendar.getTime().after(fromTimestamp)) {
@@ -111,11 +111,9 @@ public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSched
 											}
 										}
 									}
-									calendar.add(Calendar.SECOND, 1);
 								}
 							}
 						}
-						calendar.add(Calendar.MINUTE, 1);
 					}
 				}
 			}
@@ -207,8 +205,8 @@ public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSched
 					else {
 						// working with day of week and/or week of month
 						if (!configuration.getDayOfWeek().isEmpty() || !configuration.getWeekOfMonth().isEmpty()) {
-							calendar.set(Calendar.WEEK_OF_MONTH, 1);
 							for (int i = 1; i <= calendar.getActualMaximum(Calendar.WEEK_OF_MONTH); i++) {
+								calendar.set(Calendar.WEEK_OF_MONTH, i);
 								if (configuration.getWeekOfMonth().isEmpty() || configuration.getWeekOfMonth().contains(i)) {
 									calendar.getTime();
 									if (granularity == Granularity.WEEK) {
@@ -234,13 +232,12 @@ public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSched
 										}
 									}
 								}
-								calendar.add(Calendar.WEEK_OF_MONTH, 1);
 							}
 						}
 						// working with regular day of month
 						else {
-							calendar.set(Calendar.DAY_OF_MONTH, 1);
 							for (int i = 1; i <= calendar.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
+								calendar.set(Calendar.DAY_OF_MONTH, i);
 								if (configuration.getDayOfMonth().isEmpty() || configuration.getDayOfMonth().contains(i)) {
 									if (granularity == Granularity.DAY) {
 										if (calendar.getTime().after(fromTimestamp)) {
@@ -254,7 +251,6 @@ public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSched
 										}
 									}
 								}
-								calendar.add(Calendar.DAY_OF_MONTH, 1);
 							}
 						}
 					}
