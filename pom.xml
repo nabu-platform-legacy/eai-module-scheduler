@@ -38,6 +38,11 @@
 			<artifactId>eai-repository</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>nabu</groupId>
+			<artifactId>eai-module-cluster</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 </project>

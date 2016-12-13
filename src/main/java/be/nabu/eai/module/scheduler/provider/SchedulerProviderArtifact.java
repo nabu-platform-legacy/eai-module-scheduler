@@ -5,8 +5,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import nabu.misc.cluster.Services;
+import be.nabu.eai.module.cluster.ClusterArtifact;
+import be.nabu.eai.module.cluster.api.MasterSwitcher;
 import be.nabu.eai.repository.api.Repository;
 import be.nabu.eai.repository.artifacts.jaxb.JAXBArtifact;
+import be.nabu.eai.repository.util.SystemPrincipal;
 import be.nabu.libs.artifacts.api.StartableArtifact;
 import be.nabu.libs.artifacts.api.StoppableArtifact;
 import be.nabu.libs.resources.api.ResourceContainer;
@@ -16,27 +23,62 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 	private ExecutorService executors;
 	private Thread schedulerThread;
 	private Scheduler scheduler;
+	private ClusterArtifact ownCluster;
+	private MasterSwitcher switcher;
+	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	public SchedulerProviderArtifact(String id, ResourceContainer<?> directory, Repository repository) {
 		super(id, directory, repository, "scheduler-provider.xml", SchedulerProviderConfiguration.class);
+		switcher = new MasterSwitcher() {
+			@Override
+			public void switchMaster(String master, boolean amMaster) {
+				// we don't want to do anything special during elections
+				// if we were the master before, we stay the master of scheduling until a new master is appointed
+				// the appointment is synchronous so there should be no (?) conflict, the new master will start up within a short timespan of this one going down
+				if (master != null) {
+					if (amMaster) {
+						try {
+							logger.info("Became master, starting scheduler provider: " + getId());
+							start();
+						}
+						catch (IOException e) {
+							logger.error("Became master but could not enable scheduler: " + getId(), e);
+						}
+					}
+					else {
+						try {
+							logger.info("Stopped being master, stopping scheduler provider: " + getId());
+							stop();
+						}
+						catch (IOException e) {
+							logger.error("Stopped being master but could not disable scheduler: " + getId(), e);
+						}
+					}
+				}
+			}
+		};
 	}
 
 	@Override
 	public void stop() throws IOException {
-		if (this.executors != null) {
-			this.executors.shutdownNow();
-			this.executors = null;
-		}
 		if (schedulerThread != null) {
 			schedulerThread.interrupt();
 			schedulerThread = null;
+		}
+		if (this.executors != null) {
+			this.executors.shutdownNow();
+			this.executors = null;
 		}
 		scheduler = null;
 	}
 
 	@Override
 	public void start() throws IOException {
-		if (getConfiguration().isEnabled()) {
+		ownCluster = Services.getOwnCluster(getRepository().newExecutionContext(SystemPrincipal.ROOT));
+		if (ownCluster != null) {
+			ownCluster.addSwitcher(switcher);
+		}
+		if (getConfiguration().isEnabled() && (ownCluster == null || ownCluster.isMaster())) {
 			int poolSize = getConfiguration().getPoolSize() == null || getConfiguration().getPoolSize() <= 0 ? 1 : getConfiguration().getPoolSize();
 			this.executors = Executors.newFixedThreadPool(poolSize);
 			scheduler = new Scheduler(this);
