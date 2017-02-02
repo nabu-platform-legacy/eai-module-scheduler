@@ -5,10 +5,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import nabu.misc.cluster.Services;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nabu.misc.cluster.Services;
 import be.nabu.eai.module.cluster.ClusterArtifact;
 import be.nabu.eai.module.cluster.api.MasterSwitcher;
 import be.nabu.eai.repository.api.Repository;
@@ -23,8 +24,8 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 	private ExecutorService executors;
 	private Thread schedulerThread;
 	private Scheduler scheduler;
-	private ClusterArtifact ownCluster;
 	private MasterSwitcher switcher;
+	private ClusterArtifact ownCluster;
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	public SchedulerProviderArtifact(String id, ResourceContainer<?> directory, Repository repository) {
@@ -36,22 +37,14 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 				// if we were the master before, we stay the master of scheduling until a new master is appointed
 				// the appointment is synchronous so there should be no (?) conflict, the new master will start up within a short timespan of this one going down
 				if (master != null) {
-					if (amMaster) {
+					// if we are master now, it is possible that the provider artifact was shutdown due to lack of schedulers and needs to be restarted
+					if (amMaster && !isStarted()) {
 						try {
 							logger.info("Became master, starting scheduler provider: " + getId());
 							start();
 						}
 						catch (IOException e) {
 							logger.error("Became master but could not enable scheduler: " + getId(), e);
-						}
-					}
-					else {
-						try {
-							logger.info("Stopped being master, stopping scheduler provider: " + getId());
-							stop();
-						}
-						catch (IOException e) {
-							logger.error("Stopped being master but could not disable scheduler: " + getId(), e);
 						}
 					}
 				}
@@ -74,11 +67,13 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 
 	@Override
 	public void start() throws IOException {
-		ownCluster = Services.getOwnCluster(getRepository().newExecutionContext(SystemPrincipal.ROOT));
-		if (ownCluster != null) {
-			ownCluster.addSwitcher(switcher);
-		}
-		if (getConfiguration().isEnabled() && (ownCluster == null || ownCluster.isMaster())) {
+		if (!isStarted() && getConfiguration().isEnabled()) {
+			if (ownCluster == null) {
+				ownCluster = Services.getOwnCluster(getRepository().newExecutionContext(SystemPrincipal.ROOT));
+			}
+			if (ownCluster != null) {
+				ownCluster.addSwitcher(switcher);
+			}
 			int poolSize = getConfiguration().getPoolSize() == null || getConfiguration().getPoolSize() <= 0 ? 1 : getConfiguration().getPoolSize();
 			this.executors = Executors.newFixedThreadPool(poolSize);
 			scheduler = new Scheduler(this);

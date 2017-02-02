@@ -41,7 +41,7 @@ public class Scheduler implements Runnable {
 			// start all schedulers between the old timestamp and the new one
 			for (BaseSchedulerArtifact<?> scheduler : schedulers) {
 				try {
-					if (!scheduler.getConfiguration().isEnabled()) {
+					if (!scheduler.isStarted()) {
 						continue;
 					}
 					if (!scheduledTimestamps.containsKey(scheduler.getId())) {
