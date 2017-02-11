@@ -8,10 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import be.nabu.eai.module.scheduler.base.BaseSchedulerArtifact;
+import be.nabu.eai.repository.Notification;
 import be.nabu.eai.repository.util.SystemPrincipal;
 import be.nabu.libs.services.ServiceRuntime;
 import be.nabu.libs.services.api.DefinedService;
 import be.nabu.libs.types.api.ComplexContent;
+import be.nabu.libs.validator.api.ValidationMessage.Severity;
 
 public class SchedulerRunner implements Runnable {
 
@@ -46,6 +48,18 @@ public class SchedulerRunner implements Runnable {
 		}
 		catch (Exception e) {
 			logger.error("Could not run scheduler: " + scheduled.getId(), e);
+			try {
+				Notification notification = new Notification();
+				notification.setContext(Arrays.asList(scheduled.getConfig().getService().getId(), "nabu.misc.scheduler"));
+				notification.setCode(0);
+				notification.setMessage("Scheduled run at '" + timestamp + "' failed");
+				notification.setDescription(Notification.format(e));
+				notification.setSeverity(Severity.ERROR);
+				scheduled.getRepository().getEventDispatcher().fire(notification, this);
+			}
+			catch (Exception f) {
+				logger.error("Could not send notification", f);
+			}
 		}
 	}
 
