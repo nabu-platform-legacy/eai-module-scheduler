@@ -39,6 +39,7 @@ abstract public class BaseSchedulerGUIManager<C extends BaseSchedulerConfigurati
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <V> void setValue(A instance, Property<V> property, V value) {
 		if ("service".equals(property.getName())) {
 			Map<String, String> properties = getConfiguration(instance).getProperties();
@@ -58,6 +59,9 @@ abstract public class BaseSchedulerGUIManager<C extends BaseSchedulerConfigurati
 		}
 		if (!"properties".equals(property.getName())) {
 			super.setValue(instance, property, value);
+		}
+		else if (value instanceof Map) {
+			getConfiguration(instance).getProperties().putAll(((Map<? extends String, ? extends String>) value));
 		}
 	}
 
