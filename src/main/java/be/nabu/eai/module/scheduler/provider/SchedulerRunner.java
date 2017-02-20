@@ -50,7 +50,8 @@ public class SchedulerRunner implements Runnable {
 			logger.error("Could not run scheduler: " + scheduled.getId(), e);
 			try {
 				Notification notification = new Notification();
-				notification.setContext(Arrays.asList(scheduled.getConfig().getService().getId(), "nabu.misc.scheduler"));
+				notification.setContext(Arrays.asList(scheduled.getConfig().getService().getId(), scheduled.getId()));
+				notification.setType("nabu.misc.scheduler.run");
 				notification.setCode(0);
 				notification.setMessage("Scheduled run at '" + timestamp + "' failed");
 				notification.setDescription(Notification.format(e));
