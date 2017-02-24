@@ -100,6 +100,11 @@ public abstract class BaseSchedulerArtifact<T extends BaseSchedulerConfiguration
 					started = true;
 				}
 			}
+			if (started && getConfig().getProvider() != null) {
+				// need to actually refresh all the schedulers when we start this one because if it is the consequence of a save and reload, we may have a new object
+				// so the references stored by the provider are outdated
+				getConfig().getProvider().refresh();
+			}
 		}
 	}
 
@@ -108,5 +113,4 @@ public abstract class BaseSchedulerArtifact<T extends BaseSchedulerConfiguration
 		return started;
 	}
 
-	
 }

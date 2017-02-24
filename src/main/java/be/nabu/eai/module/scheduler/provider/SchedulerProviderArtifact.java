@@ -99,6 +99,13 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 	public void refresh() {
 		if (scheduler != null) {
 			scheduler.refresh();
+			wakeup();
+		}
+	}
+
+	public void wakeup() {
+		if (scheduler != null && scheduler.isSleeping() && schedulerThread != null) {
+			schedulerThread.interrupt();
 		}
 	}
 }
