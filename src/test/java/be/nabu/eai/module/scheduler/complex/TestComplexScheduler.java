@@ -16,7 +16,8 @@ public class TestComplexScheduler {
 //		configuration.setYear(Arrays.asList(2015, 2016));
 //		configuration.setWeekOfMonth(Arrays.asList(1));
 //		configuration.setDayOfWeek(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.FRIDAY));
-		configuration.setMinute(Arrays.asList(0));
+//		configuration.setMinute(Arrays.asList(0));
+		configuration.setSecond(Arrays.asList(0, 10));
 		
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 //		Date start = formatter.parse("2015-01-12 13:03");

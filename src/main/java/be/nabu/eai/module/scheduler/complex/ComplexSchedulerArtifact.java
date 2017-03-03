@@ -104,7 +104,7 @@ public class ComplexSchedulerArtifact extends BaseSchedulerArtifact<ComplexSched
 							else {
 								for (int second = 0; second < 60; second++) {
 									calendar.set(Calendar.SECOND, second);
-									if (configuration.getMinute().isEmpty() || configuration.getMinute().contains(second)) {
+									if (configuration.getSecond().isEmpty() || configuration.getSecond().contains(second)) {
 										if (granularity == Granularity.SECOND) {
 											if (calendar.getTime().after(fromTimestamp)) {
 												return calendar.getTime();
