@@ -54,6 +54,10 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 
 	@Override
 	public void stop() throws IOException {
+		if (scheduler != null) {
+			scheduler.stop();
+			scheduler = null;
+		}
 		if (schedulerThread != null) {
 			schedulerThread.interrupt();
 			schedulerThread = null;
@@ -62,7 +66,6 @@ public class SchedulerProviderArtifact extends JAXBArtifact<SchedulerProviderCon
 			this.executors.shutdownNow();
 			this.executors = null;
 		}
-		scheduler = null;
 	}
 
 	@Override

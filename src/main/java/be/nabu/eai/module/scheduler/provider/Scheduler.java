@@ -42,6 +42,9 @@ public class Scheduler implements Runnable {
 				Date earliestAfter = null;
 				// start all schedulers between the old timestamp and the new one
 				for (BaseSchedulerArtifact<?> scheduler : schedulers) {
+					if (stop) {
+						break;
+					}
 					try {
 						if (!scheduler.isStarted()) {
 							continue;
@@ -80,6 +83,9 @@ public class Scheduler implements Runnable {
 					catch (Exception e) {
 						logger.error("Could not process scheduler: " + scheduler, e);
 					}
+				}
+				if (stop) {
+					break;
 				}
 				// no more schedulers to run, sleep for a minute
 				if (earliestAfter == null) {
