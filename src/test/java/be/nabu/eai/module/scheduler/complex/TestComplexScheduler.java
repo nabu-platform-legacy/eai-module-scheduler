@@ -17,11 +17,13 @@ public class TestComplexScheduler {
 //		configuration.setWeekOfMonth(Arrays.asList(1));
 //		configuration.setDayOfWeek(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.FRIDAY));
 //		configuration.setMinute(Arrays.asList(0));
-		configuration.setSecond(Arrays.asList(0, 10));
+		configuration.setSecond(Arrays.asList(0, 10, 20, 30, 40, 50));
 		
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //		Date start = formatter.parse("2015-01-12 13:03");
-		Date start = new Date();
+//		Date start = new Date();
+		Date start = formatter.parse("2017-03-03 16:10:50");
+		System.out.println("Start: " + start);
 		for (int i = 0; i < 5; i++) {
 			start = ComplexSchedulerArtifact.calculateNextRun(configuration, start);
 			System.out.println("NEXT RUN: " + start);

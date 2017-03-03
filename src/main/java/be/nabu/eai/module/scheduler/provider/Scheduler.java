@@ -40,6 +40,7 @@ public class Scheduler implements Runnable {
 				List<BaseSchedulerArtifact<?>> schedulers = getSchedulers();
 				Date newTimestamp = new Date();
 				Date earliestAfter = null;
+				List<String> timestampsToRemove = new ArrayList<String>(scheduledTimestamps.keySet());
 				// start all schedulers between the old timestamp and the new one
 				for (BaseSchedulerArtifact<?> scheduler : schedulers) {
 					if (stop) {
@@ -49,6 +50,8 @@ public class Scheduler implements Runnable {
 						if (!scheduler.isStarted()) {
 							continue;
 						}
+						// don't remove the timestamp for this scheduler, we are running it
+						timestampsToRemove.remove(scheduler.getId());
 						if (!scheduledTimestamps.containsKey(scheduler.getId())) {
 							scheduledTimestamps.put(scheduler.getId(), scheduler.getInitialRun(newTimestamp));
 						}
@@ -87,20 +90,30 @@ public class Scheduler implements Runnable {
 				if (stop) {
 					break;
 				}
-				// no more schedulers to run, sleep for a minute
-				if (earliestAfter == null) {
-					logger.debug("No active schedulers found for provider {}, going into sleep mode", schedulerProviderArtifact.getId());
-					sleeping = true;
-					Thread.sleep(60000);
-					sleeping = false;
+				// remove the timestamps for all schedulers we don't actually run, this could lead to misleading "last" timestamps when we do run them again (if ever)
+				for (String timestampToRemove : timestampsToRemove) {
+					scheduledTimestamps.remove(timestampToRemove);
 				}
-				else {
-					long millis = earliestAfter.getTime() - new Date().getTime();
-					if (millis > 0) {
+				// if we were interrupted during our processing, we don't want to go into sleep, we need to recalculate everything
+				if (!Thread.interrupted()) {
+					// no more schedulers to run, sleep for a minute
+					if (earliestAfter == null) {
+						logger.debug("No active schedulers found for provider {}, going into sleep mode", schedulerProviderArtifact.getId());
 						sleeping = true;
-						Thread.sleep(millis);
+						Thread.sleep(60000);
 						sleeping = false;
 					}
+					else {
+						long millis = earliestAfter.getTime() - new Date().getTime();
+						if (millis > 0) {
+							sleeping = true;
+							Thread.sleep(millis);
+							sleeping = false;
+						}
+					}
+				}
+				else {
+					logger.info("Skipping sleep mode due to interrupt");
 				}
 			}
 			// if interrupted, we continue, use "stop" to actually stop
