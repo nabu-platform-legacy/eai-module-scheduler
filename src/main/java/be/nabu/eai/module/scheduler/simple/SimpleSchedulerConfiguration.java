@@ -3,6 +3,7 @@ package be.nabu.eai.module.scheduler.simple;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import be.nabu.eai.api.EnvironmentSpecific;
 import be.nabu.eai.module.scheduler.base.BaseSchedulerConfiguration;
 
 @XmlRootElement(name = "simpleScheduler")
@@ -11,6 +12,7 @@ public class SimpleSchedulerConfiguration extends BaseSchedulerConfiguration {
 	
 	private long repeatInterval;
 
+	@EnvironmentSpecific
 	public long getRepeatInterval() {
 		return repeatInterval;
 	}

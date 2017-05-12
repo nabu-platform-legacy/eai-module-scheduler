@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import be.nabu.eai.api.Enumerator;
+import be.nabu.eai.api.EnvironmentSpecific;
 import be.nabu.eai.api.ValueEnumerator;
 import be.nabu.eai.module.scheduler.base.BaseSchedulerConfiguration;
 
@@ -57,6 +58,8 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 			return calendarField;
 		}
 	}
+	
+	@EnvironmentSpecific
 	public List<DayOfWeek> getDayOfWeek() {
 		if (dayOfWeek == null) {
 			dayOfWeek = new ArrayList<DayOfWeek>();
@@ -66,6 +69,8 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 	public void setDayOfWeek(List<DayOfWeek> dayOfWeek) {
 		this.dayOfWeek = dayOfWeek;
 	}
+	
+	@EnvironmentSpecific
 	public List<MonthOfYear> getMonthOfYear() {
 		if (monthOfYear == null) {
 			monthOfYear = new ArrayList<MonthOfYear>();
@@ -75,6 +80,8 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 	public void setMonthOfYear(List<MonthOfYear> monthOfYear) {
 		this.monthOfYear = monthOfYear;
 	}
+	
+	@EnvironmentSpecific
 	@ValueEnumerator(enumerator = YearEnumerator.class)
 	public List<Integer> getYear() {
 		if (year == null) {
@@ -85,6 +92,8 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 	public void setYear(List<Integer> year) {
 		this.year = year;
 	}
+	
+	@EnvironmentSpecific
 	@ValueEnumerator(enumerator = DayEnumerator.class)
 	public List<Integer> getDayOfMonth() {
 		if (dayOfMonth == null) {
@@ -95,6 +104,8 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 	public void setDayOfMonth(List<Integer> dayOfMonth) {
 		this.dayOfMonth = dayOfMonth;
 	}
+	
+	@EnvironmentSpecific
 	@ValueEnumerator(enumerator = HourEnumerator.class)
 	public List<Integer> getHour() {
 		if (hour == null) {
@@ -105,6 +116,8 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 	public void setHour(List<Integer> hour) {
 		this.hour = hour;
 	}
+	
+	@EnvironmentSpecific
 	@ValueEnumerator(enumerator = MinuteEnumerator.class)
 	public List<Integer> getMinute() {
 		if (minute == null) {
@@ -115,6 +128,8 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 	public void setMinute(List<Integer> minute) {
 		this.minute = minute;
 	}
+	
+	@EnvironmentSpecific
 	@ValueEnumerator(enumerator = MinuteEnumerator.class)
 	public List<Integer> getSecond() {
 		if (second == null) {
@@ -126,6 +141,7 @@ public class ComplexSchedulerConfiguration extends BaseSchedulerConfiguration {
 		this.second = second;
 	}
 	
+	@EnvironmentSpecific
 	@ValueEnumerator(enumerator = WeekOfMonthEnumerator.class)
 	public List<Integer> getWeekOfMonth() {
 		if (weekOfMonth == null) {
