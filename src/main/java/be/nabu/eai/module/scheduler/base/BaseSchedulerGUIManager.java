@@ -88,6 +88,9 @@ abstract public class BaseSchedulerGUIManager<C extends BaseSchedulerConfigurati
 						Date date = new Date();
 						for (int i = 0; i < amount; i++) {
 							Date nextRun = instance.getNextRun(date);
+							if (nextRun == null) {
+								break;
+							}
 							runs.add(nextRun);
 							if (i > 0) {
 								builder.append("\n");
