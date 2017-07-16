@@ -11,6 +11,7 @@ import be.nabu.eai.module.scheduler.base.BaseSchedulerArtifact;
 import be.nabu.eai.repository.Notification;
 import be.nabu.eai.repository.util.SystemPrincipal;
 import be.nabu.libs.services.ServiceRuntime;
+import be.nabu.libs.services.ServiceUtils;
 import be.nabu.libs.services.api.DefinedService;
 import be.nabu.libs.types.api.ComplexContent;
 import be.nabu.libs.validator.api.ValidationMessage.Severity;
@@ -44,6 +45,7 @@ public class SchedulerRunner implements Runnable {
 			frameworkInput.set("timestamp", timestamp);
 			frameworkInput.set("maxAmountOfRuns", scheduled.getConfiguration().getAmountOfTimes());
 			ServiceRuntime runtime = new ServiceRuntime(frameworkService, scheduled.getRepository().newExecutionContext(SystemPrincipal.ROOT));
+			ServiceUtils.setServiceContext(runtime, scheduled.getConfig().getService().getId());
 			runtime.run(frameworkInput);
 		}
 		catch (Exception e) {
